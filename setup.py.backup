@@ -1,0 +1,84 @@
+"""
+Setup script for NNsight Selfie.
+"""
+
+from setuptools import setup, find_packages
+import os
+
+# Read README for long description
+readme_path = os.path.join(os.path.dirname(__file__), 'README.md')
+with open(readme_path, 'r', encoding='utf-8') as f:
+    long_description = f.read()
+
+# Read version from __init__.py
+version = {}
+with open(os.path.join('nnsight_selfie', '__init__.py')) as f:
+    exec(f.read(), {'__name__': '__main__'}, version)
+
+setup(
+    name="nnsight-selfie",
+    version=version['__version__'],
+    author="NNsight Selfie Contributors",
+    description="Model-agnostic neural network interpretation using NNsight",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    packages=find_packages(),
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Topic :: Scientific/Engineering :: Artificial Intelligence",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+    ],
+    python_requires=">=3.8",
+    install_requires=[
+        "torch>=1.9.0",
+        "transformers>=4.20.0",
+        "nnsight>=0.3.0",
+        "tqdm",
+        "numpy",
+        "pandas",
+    ],
+    extras_require={
+        "dev": [
+            "pytest>=6.0",
+            "pytest-cov",
+            "black",
+            "isort",
+            "flake8",
+        ],
+        "examples": [
+            "jupyter",
+            "matplotlib",
+            "seaborn",
+        ]
+    },
+    entry_points={
+        "console_scripts": [
+            # Add CLI commands if needed in the future
+        ],
+    },
+    project_urls={
+        "Bug Reports": "https://github.com/your-username/nnsight-selfie/issues",
+        "Source": "https://github.com/your-username/nnsight-selfie",
+        "Documentation": "https://github.com/your-username/nnsight-selfie#readme",
+    },
+    keywords=[
+        "neural networks",
+        "interpretability", 
+        "transformer models",
+        "activation analysis",
+        "model agnostic",
+        "nnsight",
+        "selfie",
+    ],
+    include_package_data=True,
+    zip_safe=False,
+)

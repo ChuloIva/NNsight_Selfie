@@ -1,0 +1,7 @@
+torch>=1.9.0
+transformers>=4.20.0
+nnsight>=0.3.0
+tqdm
+numpy
+pandas
+scikit-learn
