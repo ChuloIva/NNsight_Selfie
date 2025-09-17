@@ -21,7 +21,7 @@ This library extends the original [selfie approach](https://arxiv.org/abs/2403.1
 
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/ChuloIva/NNsight_Selfie
 cd NNsight_selfie
 
 # Install dependencies
@@ -186,16 +186,6 @@ results_additive = selfie.interpret(
 )
 ```
 
-## Comparison with Original Selfie
-
-| Feature | Original Selfie | NNsight Selfie |
-|---------|----------------|----------------|
-| Model Support | LLaMA only | Any transformer |
-| Implementation | Custom forward wrappers | NNsight tracing |
-| Layer Access | Hardcoded paths | Dynamic detection |
-| Intervention | Manual injection | Context managers |
-| Batching | Manual | Built-in |
-| Remote Execution | No | Yes (via NNsight) |
 
 ## API Reference
 
