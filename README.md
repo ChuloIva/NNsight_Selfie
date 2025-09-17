@@ -1,20 +1,21 @@
 # NNsight Selfie
 
-A model-agnostic implementation of selfie-like neural network interpretation using NNsight.
+A model-agnostic implementation of the [selfie library](https://github.com/tonychenxyz/selfie) using [NNsight](https://github.com/ndif-team/nnsight) for neural network interpretation.
 
 ## Overview
 
-This library provides the ability to perform neural network interpretation similar to the original selfie library, but with support for any transformer model architecture through NNsight's universal interface.
+This library extends the original [selfie approach](https://arxiv.org/abs/2403.10949) to work with any transformer model architecture through NNsight's universal interface. While the original selfie was designed specifically for LLaMA models, our implementation provides the same interpretation capabilities across GPT, BERT, T5, and other transformer architectures.
 
 ## Key Features
 
 - **Model Agnostic**: Works with GPT, LLaMA, BERT, T5, and other transformer models
-- **Cross-Platform**: Automatic device detection (MPS for Apple Silicon, CUDA for NVIDIA, CPU fallback)
+- **Cross-Platform**: Automatic device detection (MPS, CUDA, CPU)
 - **Activation Extraction**: Extract activations from any layer and token position
-- **Activation Injection**: Inject activations during generation to steer model behavior  
+- **Activation Injection**: Inject activations during generation to steer model behavior
+- **Vector Arithmetic**: Perform concept arithmetic like "King - Man + Woman = Queen"
 - **Flexible Interpretation**: Create custom interpretation prompts with placeholders
 - **Batch Processing**: Efficiently process multiple interpretations
-- **Analysis Tools**: Utilities for activation analysis, similarity computation, and more
+- **Analysis Tools**: Utilities for activation analysis, similarity computation, and vector projections
 
 ## Installation
 
@@ -56,45 +57,16 @@ print(f"Token interpretation: {results['interpretation'][0]}")
 
 NNsight Selfie automatically detects and uses the optimal device for your system:
 
-### Automatic Device Detection
-
 ```python
-from nnsight_selfie import print_device_info, get_optimal_device
+from nnsight_selfie import get_optimal_device
 
-# Check what devices are available
-print_device_info()
+# Automatic device detection: MPS (Apple Silicon) > CUDA (NVIDIA) > CPU
+device = get_optimal_device()
+selfie = ModelAgnosticSelfie("google/gemma-2-2b-it")  # Uses optimal device automatically
 
-# Get the optimal device for your system
-device = get_optimal_device()  # Returns "mps", "cuda", or "cpu"
-
-# Model will automatically use the optimal device
-selfie = ModelAgnosticSelfie("gpt2")  # Uses MPS on Apple Silicon!
+# Or specify manually
+selfie = ModelAgnosticSelfie("google/gemma-3-4b-it", device="cuda")  # Force specific device
 ```
-
-### Device Priority Order
-
-1. **MPS** (Metal Performance Shaders) - Apple Silicon Macs (M1/M2/M3+)
-2. **CUDA** - NVIDIA GPUs 
-3. **CPU** - Universal fallback
-
-### Manual Device Selection
-
-```python
-# Force specific device
-selfie = ModelAgnosticSelfie("gpt2", device="mps")    # Force MPS
-selfie = ModelAgnosticSelfie("gpt2", device="cuda")   # Force CUDA  
-selfie = ModelAgnosticSelfie("gpt2", device="cpu")    # Force CPU
-
-# Check which device was used
-print(f"Model loaded on: {selfie.device}")
-```
-
-### MPS-Specific Features
-
-- Automatic fallback to CPU for unsupported operations
-- Device-aware tensor management
-- Optimized memory usage for Apple Silicon
-- Graceful handling of MPS limitations
 
 ## Core Components
 
@@ -121,7 +93,7 @@ Helper class for creating interpretation prompts with placeholders:
 ### Basic Token Interpretation
 
 ```python
-selfie = ModelAgnosticSelfie("microsoft/DialoGPT-small")
+selfie = ModelAgnosticSelfie("google/gemma-2-2b-it")
 prompt = InterpretationPrompt.create_concept_prompt(selfie.model.tokenizer)
 
 results = selfie.interpret(
@@ -141,7 +113,7 @@ for i, interpretation in enumerate(results['interpretation']):
 ```python
 # Extract activations for different concepts
 king_acts = selfie.get_activations("The king ruled wisely", layer_indices=[6])
-man_acts = selfie.get_activations("The man walked home", layer_indices=[6])  
+man_acts = selfie.get_activations("The man walked home", layer_indices=[6])
 woman_acts = selfie.get_activations("The woman read quietly", layer_indices=[6])
 
 # Perform king - man + woman
@@ -154,13 +126,15 @@ interpretation = selfie.interpret_vectors(
     max_new_tokens=10
 )[0]
 
-print(f"King - Man + Woman = {interpretation}")
+print(f"King - Man + Woman = {interpretation}")  # Expected: Queen-like concept
 ```
+
+*See [`examples/Vector_Arithmetic_Lab.ipynb`](examples/Vector_Arithmetic_Lab.ipynb) for comprehensive vector arithmetic experiments and analysis.*
 
 ### Multi-Model Analysis
 
 ```python
-models = ["gpt2", "microsoft/DialoGPT-small", "distilgpt2"]
+models = ["google/gemma-2-2b-it", "google/gemma-3-4b-it", "meta-llama/Llama-3.2-1B-Instruct"]
 
 for model_name in models:
     selfie = ModelAgnosticSelfie(model_name)
@@ -262,17 +236,17 @@ See the docstrings in the source code for detailed API documentation:
 
 ## Examples and Tests
 
-- [`examples/basic_usage.py`](examples/basic_usage.py): Basic functionality examples with automatic device detection
-- [`examples/advanced_usage.py`](examples/advanced_usage.py): Advanced analysis workflows
-- [`examples/mps_compatibility.py`](examples/mps_compatibility.py): MPS/Apple Silicon specific examples and troubleshooting
-- [`tests/test_basic.py`](tests/test_basic.py): Unit tests
+**🔬 Vector Arithmetic Lab**: [`examples/Vector_Arithmetic_Lab.ipynb`](examples/Vector_Arithmetic_Lab.ipynb) - Interactive notebook demonstrating:
+- Classic vector arithmetic (King - Man + Woman = Queen)
+- Multi-string concept extraction for robust results
+- Vector projections and directional analysis
+- Emotion and abstract concept arithmetic
+- Layer comparison and multi-layer aggregation
 
-Run examples:
-```bash
-python examples/basic_usage.py
-python examples/advanced_usage.py
-python examples/mps_compatibility.py  # Apple Silicon Mac specific
-```
+Other examples:
+- [`examples/basic_usage.py`](examples/basic_usage.py): Basic functionality examples
+- [`examples/advanced_usage.py`](examples/advanced_usage.py): Advanced analysis workflows
+- [`tests/test_basic.py`](tests/test_basic.py): Unit tests
 
 Run tests:
 ```bash
@@ -302,7 +276,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgments
 
-- Original [selfie](https://github.com/valmikikothari/selfie) library for inspiration
+- Original [selfie](https://github.com/tonychenxyz/selfie) library for inspiration
 - [NNsight](https://github.com/ndif-team/nnsight) for the universal intervention framework
 - HuggingFace Transformers for model implementations
 
@@ -311,14 +285,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Common Issues
 
 1. **Import Error**: Make sure NNsight is installed: `pip install nnsight`
-2. **CUDA/Memory Issues**: Use `device="cpu"` for testing, or smaller models
+2. **CUDA/Memory Issues**: Use `device="cpu"` for testing, or smaller models like `google/gemma-2-2b-it`
 3. **Model Not Found**: Ensure model name is correct and you have internet access
 4. **Layer Detection Failed**: Check model architecture or provide custom layer paths
-5. **MPS Issues on Apple Silicon**:
-   - Update PyTorch: `pip install --upgrade torch torchvision torchaudio`
-   - Requires macOS 12.3+ and Apple Silicon (M1/M2/M3+)
-   - Some operations may not be supported on MPS yet (automatic CPU fallback)
-   - Force CPU if needed: `ModelAgnosticSelfie(model_name, device="cpu")`
+5. **Device Issues**: Library supports MPS (Apple Silicon), CUDA (NVIDIA), and CPU with automatic fallback
 
 ### Getting Help
 
