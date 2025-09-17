@@ -131,35 +131,6 @@ print(f"King - Man + Woman = {interpretation}")  # Expected: Queen-like concept
 
 *See [`examples/Vector_Arithmetic_Lab.ipynb`](examples/Vector_Arithmetic_Lab.ipynb) for comprehensive vector arithmetic experiments and analysis.*
 
-### Multi-Model Analysis
-
-```python
-models = ["google/gemma-2-2b-it", "google/gemma-3-4b-it", "meta-llama/Llama-3.2-1B-Instruct"]
-
-for model_name in models:
-    selfie = ModelAgnosticSelfie(model_name)
-    print(f"\n{model_name}: {len(selfie.layer_paths)} layers detected")
-    
-    # Quick interpretation test
-    results = selfie.interpret(
-        original_prompt="Hello world",
-        interpretation_prompt=prompt,
-        tokens_to_interpret=[(2, 0)],
-        max_new_tokens=8
-    )
-    print(f"Interpretation: {results['interpretation'][0]}")
-```
-
-## Supported Model Architectures
-
-The library automatically detects layer structures for:
-
-- **GPT-style**: GPT-2, GPT-Neo, DialoGPT (layers at `transformer.h.*`)
-- **LLaMA-style**: LLaMA, Alpaca, Vicuna (layers at `model.layers.*`) 
-- **BERT-style**: BERT, RoBERTa, DeBERTa (layers at `bert.encoder.layer.*`)
-- **T5/BART**: Encoder-decoder models (layers at `encoder.layer.*`, `decoder.layers.*`)
-
-For unsupported architectures, the library attempts automatic layer detection.
 
 ## Advanced Features
 
@@ -243,16 +214,6 @@ See the docstrings in the source code for detailed API documentation:
 - Emotion and abstract concept arithmetic
 - Layer comparison and multi-layer aggregation
 
-Other examples:
-- [`examples/basic_usage.py`](examples/basic_usage.py): Basic functionality examples
-- [`examples/advanced_usage.py`](examples/advanced_usage.py): Advanced analysis workflows
-- [`tests/test_basic.py`](tests/test_basic.py): Unit tests
-
-Run tests:
-```bash
-pytest tests/ -v
-```
-
 ## Requirements
 
 - Python 3.8+
@@ -279,19 +240,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Original [selfie](https://github.com/tonychenxyz/selfie) library for inspiration
 - [NNsight](https://github.com/ndif-team/nnsight) for the universal intervention framework
 - HuggingFace Transformers for model implementations
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Import Error**: Make sure NNsight is installed: `pip install nnsight`
-2. **CUDA/Memory Issues**: Use `device="cpu"` for testing, or smaller models like `google/gemma-2-2b-it`
-3. **Model Not Found**: Ensure model name is correct and you have internet access
-4. **Layer Detection Failed**: Check model architecture or provide custom layer paths
-5. **Device Issues**: Library supports MPS (Apple Silicon), CUDA (NVIDIA), and CPU with automatic fallback
-
-### Getting Help
-
-- Check the examples for usage patterns
-- Look at test files for expected behavior
-- Open an issue for bugs or feature requests
